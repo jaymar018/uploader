@@ -1,0 +1,47 @@
+.content-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.upload-form{
+    border: 1px solid black;
+    border-radius: 2px;
+    padding: 20px;
+    border-radius: 10px
+}
+
+.admin-txt {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #007BFF;
+    padding: 15px 50px;
+    border-radius: 10px;
+    color: white;
+
+}
+
+.admin-txt:hover{
+    cursor: pointer;
+}
+
+/* Sidebar styles */
+.sidebar {  
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+}
+
+/* Content area styles */
+.content-area {
+   margin-left: 250px; 
+   padding: 20px;
+}
+
