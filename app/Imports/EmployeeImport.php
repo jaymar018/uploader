@@ -9,13 +9,13 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class EmployeeImport implements ToModel, WithHeadingRow, WithChunkReading
 {
 
     private $chunkedData = [];
-    private $count = 0;
 
 
     public function model(array $row){
@@ -28,9 +28,6 @@ class EmployeeImport implements ToModel, WithHeadingRow, WithChunkReading
         // Adding the Employee model instance to the chunkedData array
         $this->chunkedData[] = $employee;
 
-        //Log::info("Data #" . $this->count. " " . $chunkedData);
-        $this->count++;
-        
         if (count($this->chunkedData) >= $this->chunkSize()) {
             $this->insertBatch();
         }
@@ -40,28 +37,24 @@ class EmployeeImport implements ToModel, WithHeadingRow, WithChunkReading
 
     public function chunkSize(): int
     {
-        return 1000;
-    }
-
-    public function onEnd(): void
-    {
-        $this->insertBatch();
-        Log::info("onEnd");
+        return 2000;
     }
 
     public function insertBatch(){
         if (!empty($this->chunkedData)) {
+            DB::beginTransaction();
             try {
-                Employee::insert($this->chunkedData);
+                DB::table('employees')->insert($this->chunkedData);
                 Log::info(count($this->chunkedData) . " records inserted successfully.");
+                DB::commit();
             } catch (\Exception $e) {
+                DB::rollBack();
                 Log::error("Error inserting records: " . $e->getMessage());
             }
     
             // Clear chunked data after insertion
             $this->chunkedData = [];
         }
-        Log::info("No data has been inserted");
 
     }
 

@@ -12,8 +12,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeeExport;
 
 
-use Faker\Factory as Faker;
-
 class GenerateRandomEmployee implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
