@@ -5,34 +5,37 @@ namespace App\Exports;
 use App\Models\Employee;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Faker\Factory as Faker;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromGenerator;
 
-class EmployeeExport implements FromCollection
+
+class EmployeeExport implements FromGenerator, WithHeadings
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection()
-    {
-        $faker = Faker::create();
-        $data = [];
+    private $faker;
 
-        for($i = 0; $i < 50000; $i++){
-            $data[] = [
-                'name' => $faker->name,
-                'address' => $faker->address,
+    public function __construct()
+    {
+        $this->faker = Faker::create();
+    }
+
+    /**
+    * @return \Generator
+    */
+    public function generator(): \Generator
+    {
+        for ($i = 0; $i < 900000; $i++) {
+            yield [
+                'name' => $this->faker->name,
+                'address' => $this->faker->address,
             ];
         }
-
-        return collect($data);
     }
 
     public function headings(): array
     {
         return [
-            'id',
             'name',
             'address'
         ];
     }
-
 }
