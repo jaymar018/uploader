@@ -51,7 +51,7 @@
                     </div>
                 @endif
         
-                <form action="{{ route('upload.employee') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('upload.student') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="file">Choose Excel File</label>

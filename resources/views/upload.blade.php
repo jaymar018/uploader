@@ -21,10 +21,13 @@
             <ul class="list-unstyled">
               <li><a href="{{route('upload.form')}}">Upload User File</a></li>
               <li><a href="{{route('upload.employee.form')}}">Upload Employee File</a></li>
+              <li><a href="{{route('upload.student')}}">Upload Student File</a></li>
               <li><a href="{{route('random.data')}}">Export Random Data</a></li>
+              <li><a href="{{route('random.student')}}">Export Random Student Data</a></li>
               <li><a href="{{route('export.employees')}}">Export Random Employees</a></li>
-              <li><a href="{{route('export.users')}}">Export File From Db (cursor)</a></li>
-              <li><a href="{{route('export.chunk')}}">Export File From Db (chunk)</a></li>
+              <li><a href="{{route('export.users')}}">Export User File From Db (cursor)</a></li>
+              <li><a href="{{route('export.chunk')}}">Export User File From Db (chunk)</a></li>
+              <li><a href="{{route('export.employees.db')}}">Export Emp. File From Db</a></li>
             </ul>
           </div>
           <!-- Content Area -->
