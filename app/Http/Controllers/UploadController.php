@@ -2,41 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Jobs\ImportExcelJob;
 use App\Models\User;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExport;
-use App\Exports\UsersExportChunk;
-use App\Jobs\GenerateRandomEmployee;
-use App\Jobs\ImportEmployeeExcelJob;
+use App\Jobs\ImportExcelJob;
+use Illuminate\Http\Request;
+use App\Helpers\FilePathHelper;
 use App\Jobs\ExportEmployeeJob;
 use App\Exports\EmployeeDbExport;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use App\Helpers\FilePathHelper;
-use Illuminate\Support\Facades\Redirect;
-use App\Jobs\GenerateRandomStudentsJob;
+use App\Exports\UsersExportChunk;
 use App\Jobs\ImportStudentExcelJob;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\GenerateRandomEmployee;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\GenerateRandomStudentsJob;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Jobs\ImportEmployeeExcelJob;
 
 class UploadController extends Controller
 {
 
     protected $filePath;
 
-    public function showUploadForm()
+    public function showUploadForm(Request $request)
     {
-        return view('upload');
+
+        if ($request->route()->named('upload.employee.form')) {
+            $formAction = route('upload.employee');
+        } elseif ($request->route()->named('upload.student')) {
+            $formAction = route('upload.student');
+        } else {
+            $formAction = route('upload.form');
+        }
+
+        $title = $this->getTitle($request->route()->getName());
+
+
+        return view('upload', compact('formAction', 'title'));
     }
 
-    public function showEmployeeUploadForm(){
-        return view('employee-upload');
-    }
-
-
-    public function showStudentUploadForm(){
-        return view('student-upload');
+    private function getTitle($routeName)
+    {
+        switch ($routeName) {
+            case 'upload.user.form':
+                return 'Upload User Data';
+            case 'upload.employee.form':
+                return 'Upload Employee Data';
+            case 'upload.student.form':
+                return 'Upload Student Data';
+            default:
+                return 'Upload User Data';
+        }
     }
 
     public function upload(Request $request)
@@ -47,102 +64,24 @@ class UploadController extends Controller
 
         $filePath = $request->file('file')->store('uploads');
 
-        ImportExcelJob::dispatch($filePath)->onQueue('imports');
-
-        return redirect()->back()->with('success', 'File uploaded successfully and is being processed.');
-    }
-
-    public function uploadEmployee(Request $request){
-        $request->validate([
-            'file' => 'required|file|mimes:xls,xlsx|max:102400',
-        ]);
-
-        $filePath = $request->file('file')->store('uploads');
-
-        ImportEmployeeExcelJob::dispatch($filePath)->onQueue('imports');
+        switch($request->route()->named())
+        {
+            case 'upload.employee':
+                ImportEmployeeExcelJob::dispatch($filePath)->onQueue('imports');
+                break;
+            case 'upload.student':
+                ImportStudentExcelJob::dispatch($filePath)->onQueue('imports');
+                break;
+            default:
+                ImportExcelJob::dispatch($filePath)->onQueue('imports');        
+        }
 
         return redirect()->back()->with('success', 'File uploaded successfully and is being processed.');
     }
 
     
-    public function importStudents(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:xls,xlsx|max:102400',
-        ]);
-
-        $filePath = $request->file('file')->store('uploads');
-
-        ImportStudentExcelJob::dispatch($filePath)->onQueue('imports');
-
-        return redirect()->back()->with('success', 'File uploaded successfully and is being processed.');   
-    }
-
-    public function exportUsers()
-    {
-        
-        return Excel::download(new UsersExport(), 'users.xlsx');
-    }
-
-    public function exportUsersChunk()
-    {
-        return Excel::download(new UsersExportChunk(), 'users.xlsx');
-    }
-
-    public function exportEmployees()
-    {
-        try {
-            GenerateRandomEmployee::dispatch()->onQueue('exports');
-            return response()->json(['message' => 'Export job has been dispatched successfully'], 200);
-        } catch (\  Exception $e) {
-            return response()->json(['error' => 'An error occurred while dispatching the export job'], 500);
-        }
-    }
-
-    public function exportEmployeeFromDb(Request $request)
-    {
-        try {
-            // Dispatch the job to export employee data
-            ExportEmployeeJob::dispatch();
-
-
-            return view('employee-upload');
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while dispatching the export job'], 500);
-        }
-    }
-
-    public function downloadExportedFile()
-    {
-        
-        // Retrieve the file path from cache
-        $filePath = cache('exported_file_path');
-
-        // Check if the file path exists in cache
-        if (!$filePath) {
-            // If file path doesn't exist, display a message
-            return redirect()->back()->with('status', 'Export is still in progress. Please try again later.');
-        }
-
-        // Check if the file exists
-        if (!Storage::exists('public/' . $filePath)) {
-            // If file doesn't exist, display a message or redirect back
-            return redirect()->back()->with('status', 'Exported file not found. Please try again later.');
-        }
-
-        // Download the file
-        return Storage::download('public/' . $filePath);
-    }
-
-    public function generateRandomStudent()
-    {
-        try {
-            GenerateRandomStudentsJob::dispatch()->onQueue('exports');
-            return response()->json(['message' => 'Export job has been dispatched successfully'], 200);
-        } catch (\  Exception $e) {
-            return response()->json(['error' => 'An error occurred while dispatching the export job'], 500);
-        }
-    }
+    
+    
 
         
     

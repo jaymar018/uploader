@@ -16,6 +16,5 @@ class RandomDataController extends Controller
 
         return 'Export process started. Check your queue worker for progress.';
     }
-
   
 }

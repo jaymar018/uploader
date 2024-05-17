@@ -45,3 +45,15 @@
    padding: 20px;
 }
 
+
+.list-unstyled > li {
+    margin-bottom: 10px;
+}
+
+.list-unstyled:nth-child(1){
+    margin-top: 10px;
+}
+
+.list-unstyled li i{
+    margin-right: 10px;
+}

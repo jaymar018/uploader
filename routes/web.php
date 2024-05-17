@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\RandomDataController;
+use App\Http\Controllers\DownloadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,21 +21,31 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/upload', [UploadController::class, 'showUploadForm'])->name('upload.form');
-Route::post('/upload', [UploadController::class, 'upload'])->name('upload'); 
+Route::get('/home', function() {
+    return view('home');
+});
 
-Route::get('/employee-upload', [UploadController::class, 'showEmployeeUploadForm'])->name('upload.employee.form');
-Route::post('/employee-upload', [UploadController::class, 'uploadEmployee'])->name('upload.employee');
+Route::prefix('download')->group(function (){
+    Route::get('/', [DownloadController::class, 'index'])->name('download');
+    Route::get('/employees', [DownloadController::class, 'download'])->name('export.employees.db');
+    Route::get('/students', [DownloadController::class, 'download'])->name('export.students.db');
+    Route::get('/exported-file-url', [DownloadController::class, 'downloadExportedFile'])->name('download.exported.file');
+});
 
-Route::get('/student-upload', [UploadController::class, 'showStudentUploadForm'])->name('upload.student.form');
-Route::post('/student-upload', [UploadController::class, 'importStudents'])->name('upload.student');
+// Upload Routes
+Route::prefix('upload')->group(function () {
+    Route::get('/', [UploadController::class, 'showUploadForm'])->name('upload.form');
+    Route::post('/', [UploadController::class, 'upload'])->name('upload');
+    Route::get('/employee', [UploadController::class, 'showUploadForm'])->name('upload.employee.form');
+    Route::post('/employee', [UploadController::class, 'uploadEmployee'])->name('upload.employee');
+    Route::get('/student', [UploadController::class, 'showUploadForm'])->name('upload.student.form');
+    Route::post('/student', [UploadController::class, 'importStudents'])->name('upload.student');
+});
 
-Route::get('/export-random-data', [RandomDataController::class, 'export'])->name('random.data');
-Route::get('/export-users', [UploadController::class, 'exportUsers'])->name('export.users');
-Route::get('/export-users-chunk', [UploadController::class, 'exportUsersChunk'])->name('export.chunk');
-Route::get('/export-random-employees', [UploadController::class, 'exportEmployees'])->name('export.employees');
-Route::get('/export-employees', [UploadController::class, 'exportEmployeeFromDb'])->name('export.employees.db');
-Route::get('/exported-file-url', [UploadController::class, 'downloadExportedFile'])->name('download.exported.file');
-Route::get('/export-random-students', [UploadController::class, 'generateRandomStudent'])->name('random.student');
-
-
+// Export Routes
+Route::prefix('export')->group(function () {
+    Route::get('/users', [ExportController::class, 'exportUsers'])->name('export.users');
+    Route::get('/users-chunk', [ExportController::class, 'exportUsersChunk'])->name('export.chunk');
+    Route::get('/random-employees', [ExportController::class, 'generateRandomData'])->name('random.employees');
+    Route::get('/random-students', [ExportController::class, 'generateRandomData'])->name('random.students');
+});

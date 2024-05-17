@@ -12,8 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeeDbExport;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
-use App\Helpers\FilePathHelper;
-use App\Jobs\GenerateDownloadUrl;
+use App\Events\FileExported;
 
 class ExportEmployeeJob implements ShouldQueue
 {
@@ -37,10 +36,18 @@ class ExportEmployeeJob implements ShouldQueue
     {    
         $filePath = 'exports/' . time() . 'employeesdb.csv';
 
-        Excel::store(new EmployeeDbExport(), $filePath, 'public');
+        $storedPath = Excel::store(new EmployeeDbExport(), $filePath, 'public');
         
-        // Cache the file path
-        cache()->put('exported_file_path', $filePath, now()->addHours(1));
+        // Check if the Excel file was successfully stored
+        if ($storedPath !== false) {
+            // Cache the file path
+            cache()->put('exported_file_path', $storedPath, now()->addHours(1));
+            
+            event(new FileExported($storedPath));
+
+        } else {
+            \Log::error('Failed to store Excel file.');
+        }
     }
 
 }
