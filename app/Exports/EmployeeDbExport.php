@@ -2,55 +2,62 @@
 
 namespace App\Exports;
 
+use App\Models\Employee;
+use App\Events\ExportProgress;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use App\Models\Employee;
 
 
-class EmployeeDbExport implements FromCollection
-{
-    public function collection()
-    {
-        return Employee::limit(200)->get();
-    }
-}
-
-// class EmployeeDbExport implements FromGenerator, WithHeadings
+// class EmployeeDbExport implements FromCollection
 // {
-    
-//     /**
-//     * @return \Generator
-//     */
-//     public function generator(): \Generator
+//     public function collection()
 //     {
-//         $chunkSize = 1000; 
-//         $offset = 0;
-
-//         do {
-//             // Fetch data from the database 
-//             $employees = Employee::select('name', 'address')
-//                 ->offset($offset)
-//                 ->limit($chunkSize)
-//                 ->cursor();
-
-//             foreach ($employees as $employee) {
-//                 yield [
-//                     'name' => $employee->name,
-//                     'address' => $employee->address,
-//                 ];
-//             }
-
-//             $offset += $chunkSize;
-//         } while ($employees->count() > 0);
+//         return Employee::limit(200)->get();
 //     }
-
-//     public function headings(): array
-//     {
-//         return [
-//             'name',
-//             'address'
-//         ];
-//     }
-
 // }
+
+class EmployeeDbExport implements FromGenerator, WithHeadings
+{
+    
+    /**
+    * @return \Generator
+    */
+    public function generator(): \Generator
+    {
+        $chunkSize = 1000; 
+        $offset = 0;
+
+        $totalRows = Employee::count();
+
+        do {
+            // Fetch data from the database 
+            $employees = Employee::select('name', 'address')
+                ->offset($offset)
+                ->limit($chunkSize)
+                ->cursor();
+
+            foreach ($employees as $employee) {
+                yield [
+                    'name' => $employee->name,
+                    'address' => $employee->address,
+                ];
+            }
+
+            $offset += $chunkSize;
+
+            $progress = round(($offset / ($totalRows + ($totalRows * 0.10))) * 100);
+
+            event(new ExportProgress($progress));
+        } while ($employees->count() > 0);
+    }
+
+    public function headings(): array
+    {
+        return [
+            'name',
+            'address'
+        ];
+    }
+
+}

@@ -25,11 +25,7 @@
                     <li><i class="fa fa-upload"></i> <a href="{{route('upload.student.form')}}">Upload Student File</a></li>
                     <li><i class="fa fa-download"></i> <a href="{{route('random.students')}}">Random Student Data</a></li>
                     <li><i class="fa fa-download"></i> <a href="{{route('random.employees')}}">Random Employees Data</a></li>
-                    {{--<li><i class="fa fa-database"></i> <a href="{{route('export.users')}}">Export User File From Db (cursor)</a></li>
-                        <li><i class="fa fa-database"></i> <a href="{{route('export.chunk')}}">Export User File From Db (chunk)</a></li> --}}
                     <li><i class="fa fa-download"></i> <a href="{{route('download')}}">Download</a></li>
-                    {{-- <li><i class="fa fa-database"></i> <a href="{{route('export.employees.db')}}">Export Emp. File From Db</a></li>
-                    <li><i class="fa fa-database"></i> <a href="{{route('export.students.db')}}">Export Stud. File From Db</a></li> --}}
                 </ul>
             </ul>
           </div>
@@ -56,6 +52,9 @@
 
 <!-- Include Bootstrap JavaScript -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="{{asset('js/app.js')}}"></script>
+@yield('scripts')
 
 </body>
 </html>

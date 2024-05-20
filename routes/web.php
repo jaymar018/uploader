@@ -1,10 +1,11 @@
 <?php
 
+use App\Events\MessageNotification;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UploadController;
 use App\Http\Controllers\ExportController;
-use App\Http\Controllers\RandomDataController;
+use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\RandomDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,15 @@ Route::get('/', function () {
 
 Route::get('/home', function() {
     return view('home');
+});
+
+Route::get('/event', function(){
+    event(new MessageNotification('Hello World'));
+    return 'Event has been broadcasted!';
+});
+
+Route::get('/listen', function(){
+    return view('listen');
 });
 
 Route::prefix('download')->group(function (){

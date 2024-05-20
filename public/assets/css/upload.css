@@ -57,3 +57,14 @@
 .list-unstyled li i{
     margin-right: 10px;
 }
+
+.progress {
+    height: 30px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    background-color: #007bff;
+}
+

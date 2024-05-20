@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Jobs\ExportEmployeeJob;
 use App\Jobs\ExportStudentJob;
+use App\Jobs\ExportEmployeeJob;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadController extends Controller
@@ -21,9 +22,7 @@ class DownloadController extends Controller
             dispatch(new $job())->onQueue('exports');
             
 
-            //return view('download');
-            $this->downloadExportedFile();
-            
+            return view('download');
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
@@ -47,11 +46,11 @@ class DownloadController extends Controller
             return redirect()->back()->with('status', 'Exported file not found. Please try again later.');
         }
 
-        $path = Storage::url($filePath);
 
         // Download the file
-        return response()->download(storage_path($path));
-        //return Storage::download('public/' . $filePath);
+        //return response()->download(storage_path($path));
+        //return response()->json(['path' => $filePath, 200]);
+        return Storage::download('public/' . $filePath);
     }
 
     

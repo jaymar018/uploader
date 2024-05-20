@@ -2,29 +2,28 @@
 
 namespace App\Events;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
-class FileExported implements ShouldBroadcast
+class ExportProgress implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $filePath;
+    public $progress;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($filePath)
+    public function __construct($progress)
     {
-        $this->filePath = $filePath;
-        Log::info('Event created: ' . $filePath);
+        $this->progress = $progress;
     }
 
     /**
@@ -34,7 +33,6 @@ class FileExported implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        Log::info('Broadcasting on channel: file');
-        return new Channel('file-exported');
+        return new Channel('export');
     }
 }

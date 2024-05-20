@@ -41,9 +41,9 @@ class ExportEmployeeJob implements ShouldQueue
         // Check if the Excel file was successfully stored
         if ($storedPath !== false) {
             // Cache the file path
-            cache()->put('exported_file_path', $storedPath, now()->addHours(1));
+            cache()->put('exported_file_path', $filePath, now()->addHours(1));
             
-            event(new FileExported($storedPath));
+            event(new FileExported($filePath));
 
         } else {
             \Log::error('Failed to store Excel file.');

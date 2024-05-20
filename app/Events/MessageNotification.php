@@ -11,20 +11,21 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class FileExported implements ShouldBroadcast
+class MessageNotification implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $filePath;
+    public $message;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($filePath)
+    public function __construct($message)
     {
-        $this->filePath = $filePath;
-        Log::info('Event created: ' . $filePath);
+        $this->message = $message;
+        Log::info('Event Created: ', ['data' => $message]);
     }
 
     /**
@@ -34,7 +35,7 @@ class FileExported implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        Log::info('Broadcasting on channel: file');
-        return new Channel('file-exported');
+        Log::info('Broadcasting on channel: notification');
+        return new Channel('notification');
     }
 }
