@@ -46,7 +46,7 @@ class EmployeeDbExport implements FromGenerator, WithHeadings
 
             $offset += $chunkSize;
 
-            $progress = round(($offset / ($totalRows + ($totalRows * 0.10))) * 100);
+            $progress = round(($offset / ($totalRows)) * 100);
 
             event(new ExportProgress($progress));
         } while ($employees->count() > 0);

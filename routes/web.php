@@ -2,10 +2,15 @@
 
 use App\Events\MessageNotification;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\RandomDataController;
+use App\Http\Controllers\GoogleDriveController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +39,23 @@ Route::get('/event', function(){
 Route::get('/listen', function(){
     return view('listen');
 });
+
+Route::get('/drive', function(){
+    return view('gdrive');
+});
+
+
+Route::get('/google-drive/folders', [GoogleDriveController::class, 'getAllFolders']);
+
+Route::get('/welcome/{userId}', [WelcomeController::class, 'showWelcome'])->name('welcome')->middleware('check.welcome.access');
+Route::post('/welcome/{userId}', [WelcomeController::class, 'acknowledgeWelcome'])->name('acknowledge.welcome')->middleware('check.welcome.access');
+Route::post('/welcome', [WelcomeController::class, 'cancelWelcome'])->name('cancel.welcome');
+    
+
+Route::get('/login', [LoginController::class, 'create'])->name('login');
+Route::post('/login', [LoginController::class, 'store']);
+
+Route::resource('files',FileController::class);
 
 Route::prefix('download')->group(function (){
     Route::get('/', [DownloadController::class, 'index'])->name('download');

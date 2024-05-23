@@ -60,4 +60,5 @@ class AdminCmsUsersController extends CBController {
 	public function hook_before_add(&$postdata) {      
 	    unset($postdata['password_confirmation']);
 	}
+
 }
