@@ -3,13 +3,18 @@
 use App\Events\MessageNotification;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\SigninController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\RandomDataController;
 use App\Http\Controllers\GoogleDriveController;
+use App\Http\Controllers\TermsAndConditionsController;
+
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
+
 
 
 /*
@@ -44,16 +49,30 @@ Route::get('/drive', function(){
     return view('gdrive');
 });
 
+Route::get('/terms-and-conditions', function(Request $request){
+    // Check if the 'clicked' query parameter exists and set session accordingly
+    if ($request->has('clicked')) {
+        Session::put('terms_clicked', true);
+    }
+
+    return view('crudbooster.terms_and_conditions');
+})->name('terms.and.conditions');
+
 
 Route::get('/google-drive/folders', [GoogleDriveController::class, 'getAllFolders']);
 
 Route::get('/welcome/{userId}', [WelcomeController::class, 'showWelcome'])->name('welcome')->middleware('check.welcome.access');
 Route::post('/welcome/{userId}', [WelcomeController::class, 'acknowledgeWelcome'])->name('acknowledge.welcome')->middleware('check.welcome.access');
 Route::post('/welcome', [WelcomeController::class, 'cancelWelcome'])->name('cancel.welcome');
-    
 
-Route::get('/login', [LoginController::class, 'create'])->name('login');
-Route::post('/login', [LoginController::class, 'store']);
+
+// Route::get('/welcome', [WelcomeController::class, 'showWelcome'])->name('welcome');
+// Route::post('/acknowledge-welcome', [WelcomeController::class, 'acknowledgeWelcome'])->name('acknowledge.welcome');
+// Route::post('/welcome', [WelcomeController::class, 'cancelWelcome'])->name('cancel.welcome');
+ 
+
+Route::get('/signin', [SigninController::class, 'create'])->name('signin');
+Route::post('/signin', [SigninController::class, 'store']);
 
 Route::resource('files',FileController::class);
 

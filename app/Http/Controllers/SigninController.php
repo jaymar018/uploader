@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LoginController extends Controller
+use Illuminate\Http\Request;
+
+class SigninController extends Controller
 {
     public function create()
     {
-        return view('auth.login');
+        return view('auth.signin');
     }
 
     public function store(Request $request)
@@ -49,9 +50,4 @@ class LoginController extends Controller
         return redirect('/');
     }
 
-
-    public function login()
-    {
-        return view('auth.signin');
-    }
 }

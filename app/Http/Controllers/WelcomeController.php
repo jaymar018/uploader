@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Auth;
 class WelcomeController extends Controller
 {
     
-    public function showWelcome(Request $request, $userId)
-    {
-        return view('welcome-message', ['userId' => $userId]);
-    }
+
+    // public function showWelcome(Request $request)
+    // {
+    //     return view('welcome-message');
+    // }
 
     // public function acknowledgeWelcome(Request $request)
     // {
@@ -23,8 +24,21 @@ class WelcomeController extends Controller
     //     $user->save();
 
     //     return redirect('/home');
-    // }    
+    // } 
+    
+    
+    // public function cancelWelcome(Request $request)
+    // {
+    //     $request->session()->forget('seen_welcome_page');
+    //     return redirect('/signin');
+    // }
+    
+    public function showWelcome(Request $request, $userId)
+    {
+        return view('welcome-message', ['userId' => $userId]);
+    }
 
+    //for crudbooster login
     public function acknowledgeWelcome(Request $request, $userId)
     {
         
@@ -39,4 +53,5 @@ class WelcomeController extends Controller
         $request->session()->forget('seen_welcome_page');
         return redirect('/admin/login');
     }
+
 }
